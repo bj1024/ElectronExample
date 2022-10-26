@@ -11,18 +11,22 @@ const createWindow = () => {
     }
   })
 
-  // リンクをクリックするとWebブラウザで開く
-  const handleUrlOpen = (e, url)=>{
-    if( url.match(/^http/)){
-      e.preventDefault()
-      shell.openExternal(url)
-    }
-  }
-  win.webContents.on('will-navigate', handleUrlOpen);
-  win.webContents.on('new-window', handleUrlOpen);
-
-
-
+  // // リンクをクリックするとWebブラウザで開く
+  // const handleUrlOpen = (e, url)=>{
+  //   if( url.match(/^http/)){
+  //     e.preventDefault()
+  //     shell.openExternal(url)
+  //   }
+  // }
+  // win.webContents.on('will-navigate', handleUrlOpen);  // 
+  
+    win.webContents.setWindowOpenHandler(({ url }) => {
+      console.log("setWindowOpenHandler " + url)
+      shell.openExternal(url);
+      return { action: 'deny' };
+    });
+  
+  
   win.loadFile('index.html')
 }
 
@@ -33,8 +37,8 @@ app.whenReady().then(() => {
       createWindow();
     }
   });
-  
 })
+
 app.on('window-all-closed', () => {
   console.log("window-all-closed")
   // if (process.platform !== 'darwin') { // mac以外
@@ -42,3 +46,7 @@ app.on('window-all-closed', () => {
   // }
 
 })
+
+
+
+
