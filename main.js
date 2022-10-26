@@ -1,10 +1,27 @@
 const { app, BrowserWindow } = require('electron')
+const { shell } = require('electron')
 
 const createWindow = () => {
   const win = new BrowserWindow({
     width: 800,
     height: 600,
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true
+    }
   })
+
+  // リンクをクリックするとWebブラウザで開く
+  const handleUrlOpen = (e, url)=>{
+    if( url.match(/^http/)){
+      e.preventDefault()
+      shell.openExternal(url)
+    }
+  }
+  win.webContents.on('will-navigate', handleUrlOpen);
+  win.webContents.on('new-window', handleUrlOpen);
+
+
 
   win.loadFile('index.html')
 }
@@ -20,8 +37,8 @@ app.whenReady().then(() => {
 })
 app.on('window-all-closed', () => {
   console.log("window-all-closed")
-  if (process.platform !== 'darwin') {
-    app.quit()
-  }
+  // if (process.platform !== 'darwin') { // mac以外
+        app.quit()
+  // }
 
 })
